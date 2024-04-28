@@ -1,12 +1,17 @@
 import sys
+import logging
 from src.global_process_handler import GlobalProcessHandler
 from time import sleep, time
+from src.utils.app_logging.app_logging import logging_setup
+
+logging_setup()
+logger = logging.getLogger(f'app.{__name__}')
 
 
 def generic_function_add(n):
     # sleep for 2 seconds
     sleep(2)
-    print(f'This is the next number being added: {n}')
+    logger.info(f'This is the next number being added: {n}')
     return n + 4
 
 
@@ -17,7 +22,7 @@ def main():
     try:
         process_handler.submit_modules(data)
     except Exception as e:
-        print(e)
+        logger.error(e)
         sys.exit()
 
 
@@ -32,4 +37,4 @@ if __name__ == '__main__':
     end_time = time() * 1000
 
     total_time = int(round((end_time - start_time) / 1000))
-    print(f'the total time is {total_time}')
+    logger.info(f'the total time is {total_time}')

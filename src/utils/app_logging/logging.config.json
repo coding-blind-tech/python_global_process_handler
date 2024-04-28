@@ -1,0 +1,30 @@
+{
+  "version": 1,
+  "loggers": {
+    "app": {
+      "level": "DEBUG",
+      "handlers": [
+        "file_handler",
+        "console_handler"
+      ]
+    }
+  },
+  "handlers": {
+    "file_handler": {
+      "class": "logging.FileHandler",
+      "filename": "app.log",
+      "level": "DEBUG",
+      "formatter": "default"
+    },
+    "console_handler": {
+      "class": "logging.StreamHandler",
+      "level": "DEBUG",
+      "formatter": "default"
+    }
+  },
+  "formatters": {
+    "default": {
+      "format": "[%(name)s - %(filename)s - %(levelname)s- %(relativeCreated)6d - %(thread)d - %(funcName)s:%(lineno)d] %(message)s"
+    }
+  }
+}
