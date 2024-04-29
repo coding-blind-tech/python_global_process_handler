@@ -2,10 +2,12 @@ import concurrent.futures
 import logging
 import os
 
-logger = logging.getLogger(f'global_process.{__name__}')
+logger = logging.getLogger(f'app.global_process.{__name__}')
 
 
 class GlobalProcessHandler():
+    """ This class is used to run multiple functions in parallel using the ProcessPoolExecutor"""
+    
     def __init__(self, funcs_to_run, cpus_to_use=0):
         logger.info('Initializing GlobalProcessHandler')
 
@@ -19,7 +21,10 @@ class GlobalProcessHandler():
 
 
     def submit_modules(self, data_set=[]):
+        """ This function submits the modules to the ProcessPoolExecutor"""
+
         logger.info('Submitting modules')
+        result_store = []
 
         with concurrent.futures.ProcessPoolExecutor(max_workers=self.max_workers) as executor:
             requests_to_make = []
@@ -36,6 +41,8 @@ class GlobalProcessHandler():
                 try:
                     result = fn.result()
                     logger.info(f"the result is {result}")
+                    result_store.append(result)
                 except Exception as e:
                     logger.error(f'Error getting result: {e}')
                     raise e
+        return result_store

@@ -1,52 +1,32 @@
 import unittest
+import logging
 from time import sleep
-from unittest.mock import MagicMock, patch
+from unittest.mock import Mock
 from src.global_process_handler import GlobalProcessHandler
+from src.utils.app_logging.app_logging import logging_setup
 
+logging_setup()
+logger = logging.getLogger(f'app.test_global_process_handler.{__name__}')
 
-def generic_function_add(n):
-    # sleep for 2 seconds
-    sleep(2)
-    print(f'Returning {n + 4}')
-    return n + 4
+def generic_func(n):
+    sleep(1)
+    return n * 2
 
+def generic_func_two(n):
+    sleep(1)
+    return n * 3
 
-class CustomMockExecutor:
-    def __init__(self, max_workers=None):
-        self._max_workers = max_workers
-        self.submit = MagicMock(return_value="result")
-
-    def __enter__(self):
-        return self
-
-    def __exit__(self, exc_type, exc_value, traceback):
-        pass
 
 class TestGlobalProcessHandler(unittest.TestCase):
-
     def setUp(self):
-        self.funcs_to_run = [generic_function_add]
-        self.handler = GlobalProcessHandler(self.funcs_to_run)
+        logger.info('Initializing TestGlobalProcessHandler')
+        self.funcs_to_run = [generic_func, generic_func_two]
+        self.data_set = [1, 2, 3]
+        self.global_process_handler = GlobalProcessHandler(self.funcs_to_run, 2)
 
-    @patch('src.test.test_global_process_handler.CustomMockExecutor')
-    @patch('src.global_process_handler.concurrent.futures.as_completed')
-    def test_submit_modules(self, mock_as_completed, mock_executor_class):
-        # Mocking as_completed to return mock future objects
-        mock_future = MagicMock()
-        mock_future.result.return_value = "result"
-        mock_as_completed.return_value.__iter__.return_value = [mock_future]
-
-        # Test with some data
-        data_set = [1, 2, 3]
-        
-        # Capture the instance of CustomMockExecutor used in the test
-        with patch('src.test.test_global_process_handler.CustomMockExecutor') as mock_executor_class:
-            self.handler.submit_modules(data_set)
-            # Get the instance of CustomMockExecutor
-            mock_executor_instance = mock_executor_class.return_value
-
-        # Assertions
-        expected_calls = len(self.funcs_to_run) * len(data_set)
-        # self.assertEqual(mock_executor_instance.submit.call_count, expected_calls)
-        # mock_executor_instance.submit.assert_called()
-        mock_as_completed.assert_called_with([mock_future])
+    def test_submit_modules(self):
+        results = self.global_process_handler.submit_modules(self.data_set)
+        # Sort results for comparison
+        # This is because executor.submit() returns results in order they complete
+        sorted_results = sorted(results)
+        self.assertEqual(sorted_results, [2, 3, 4, 6, 6, 9])
