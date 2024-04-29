@@ -9,10 +9,15 @@ import utils.Global_processing_handler as GPH
 
 ### Declaration:
 ```python
-GPH.Global_processing_handler(inputlist, [worker_function])
+GPH.Global_processing_handler([worker_function], cpus_to_use=0)
 ```
 
 ## Properties
+
+- worker_function: A list of worker functions that you want to run in parallel
+- cpus_to_use (Not required): If set, it will be the CPUs use for processing workers. Otherwise, the condition is as follows:
+  - If total logical cores > or = to 4: Use total cores - 2
+  - Else: we only use one core
 
 ### Store Initial Available Cores
 - `os_core_count`: The initial amount of logical cores.

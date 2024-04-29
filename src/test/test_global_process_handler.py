@@ -22,7 +22,7 @@ class TestGlobalProcessHandler(unittest.TestCase):
         logger.info('Initializing TestGlobalProcessHandler')
         self.funcs_to_run = [generic_func, generic_func_two]
         self.data_set = [1, 2, 3]
-        self.global_process_handler = GlobalProcessHandler(self.funcs_to_run, 2)
+        self.global_process_handler = GlobalProcessHandler(self.funcs_to_run)
 
     def test_submit_modules(self):
         results = self.global_process_handler.submit_modules(self.data_set)
